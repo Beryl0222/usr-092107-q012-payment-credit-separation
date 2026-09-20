@@ -1,0 +1,9 @@
+{
+  "event_id": "sample-012-001",
+  "event_type": "PAYMENT_PRESENTED",
+  "aggregate_type": "checkout_session",
+  "aggregate_id": "payment_credit_separation-001",
+  "occurred_at": "2026-09-20T18:00:00+08:00",
+  "version": 1,
+  "summary": "登记支付信贷分离网关的首条领域记录"
+}

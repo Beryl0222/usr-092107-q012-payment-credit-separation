@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "支付信贷分离网关领域事件",
+  "type": "object",
+  "required": [
+    "event_id",
+    "event_type",
+    "aggregate_type",
+    "aggregate_id",
+    "occurred_at",
+    "version",
+    "summary"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "PAYMENT_PRESENTED",
+        "CREDIT_DISCLOSED",
+        "CONSENT_CAPTURED",
+        "LOAN_DISBURSED",
+        "REPORT_CORRECTED"
+      ]
+    },
+    "aggregate_type": {
+      "type": "string",
+      "enum": [
+        "checkout_session",
+        "credit_offer",
+        "loan_contract",
+        "credit_correction"
+      ]
+    },
+    "aggregate_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": true
+}
