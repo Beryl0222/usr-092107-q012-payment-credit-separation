@@ -19,10 +19,25 @@
     "event_type": {
       "type": "string",
       "enum": [
+        "GOODS_CONFIRMED",
+        "SCREEN_PRESENTED",
         "PAYMENT_PRESENTED",
+        "PAYMENT_METHOD_SELECTED",
+        "COST_DISCLOSED",
         "CREDIT_DISCLOSED",
+        "SUITABILITY_ASSESSED",
+        "CREDIT_APPLIED",
+        "CREDIT_DECIDED",
         "CONSENT_CAPTURED",
+        "CONTRACT_SIGNED",
         "LOAN_DISBURSED",
+        "REPAYMENT_RECORDED",
+        "REFUND_REQUESTED",
+        "REFUND_SETTLED",
+        "OVERDUE_NOTIFIED",
+        "DISPUTE_OPENED",
+        "DISPUTE_RESOLVED",
+        "TERMS_UPDATED",
         "REPORT_CORRECTED"
       ]
     },
@@ -30,14 +45,27 @@
       "type": "string",
       "enum": [
         "checkout_session",
+        "cost_disclosure",
         "credit_offer",
+        "suitability_assessment",
+        "credit_application",
+        "contract_signing",
         "loan_contract",
-        "credit_correction"
+        "refund",
+        "overdue_notice",
+        "dispute",
+        "credit_correction",
+        "terms_document"
       ]
     },
     "aggregate_id": {
       "type": "string",
       "minLength": 1
+    },
+    "checkout_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "贯穿一次结账全流程的标识，用于把各聚合串成可追踪的状态序列"
     },
     "occurred_at": {
       "type": "string",
@@ -50,6 +78,63 @@
     "summary": {
       "type": "string",
       "minLength": 1
+    },
+    "actor_role": {
+      "type": "string",
+      "enum": [
+        "user",
+        "merchant",
+        "payment_institution",
+        "loan_facilitator",
+        "funder",
+        "collector",
+        "credit_bureau",
+        "customer_service",
+        "regulator",
+        "system"
+      ]
+    },
+    "visibility": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": [
+          "user",
+          "merchant",
+          "payment_institution",
+          "loan_facilitator",
+          "funder",
+          "collector",
+          "credit_bureau",
+          "customer_service",
+          "regulator",
+          "system"
+        ]
+      },
+      "description": "允许读取本记录的角色清单，仅向履行职责所需的调用方开放"
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 1,
+      "description": "有资金或授信副作用的事件必须携带，网络重试凭此去重"
+    },
+    "terms_version": {
+      "type": "string",
+      "minLength": 1,
+      "description": "记录所依据的页面或合同版本；版本更新后未完成流程须按新版本重新确认"
+    },
+    "references": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "本记录指向的前序记录：更正指向原记录、退款指向放款、签署指向所展示页面"
+    },
+    "payload": {
+      "type": "object",
+      "description": "各事件类型的业务载荷，字段约定见 README 与 src/validator.js"
     }
   },
   "additionalProperties": true

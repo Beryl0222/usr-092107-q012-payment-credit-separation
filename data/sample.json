@@ -3,7 +3,14 @@
   "event_type": "PAYMENT_PRESENTED",
   "aggregate_type": "checkout_session",
   "aggregate_id": "payment_credit_separation-001",
+  "checkout_id": "payment_credit_separation-001",
   "occurred_at": "2026-09-20T18:00:00+08:00",
   "version": 1,
-  "summary": "登记支付信贷分离网关的首条领域记录"
+  "summary": "登记支付信贷分离网关的首条领域记录",
+  "actor_role": "system",
+  "visibility": ["user", "merchant", "payment_institution", "loan_facilitator", "regulator"],
+  "payload": {
+    "options": [{ "method": "cash" }, { "method": "credit" }],
+    "credit_preselected": false
+  }
 }
