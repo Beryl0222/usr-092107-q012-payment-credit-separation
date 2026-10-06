@@ -1,0 +1,544 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/contracts/payloads.schema.json",
+  "title": "支付信贷分离网关事件 payload 契约",
+  "description": "按 event_type 约束 payload 结构；信封本身见 domain.schema.json。这里的字段是不变量校验（src/invariants.js）依赖的契约。",
+  "type": "object",
+  "allOf": [
+    { "$ref": "#/$defs/orderConfirmed" },
+    { "$ref": "#/$defs/presentationArchived" },
+    { "$ref": "#/$defs/paymentPresented" },
+    { "$ref": "#/$defs/paymentMethodSelected" },
+    { "$ref": "#/$defs/paymentCaptured" },
+    { "$ref": "#/$defs/creditDisclosed" },
+    { "$ref": "#/$defs/suitabilityEvaluated" },
+    { "$ref": "#/$defs/consentCaptured" },
+    { "$ref": "#/$defs/creditApplicationSubmitted" },
+    { "$ref": "#/$defs/creditApplicationDecided" },
+    { "$ref": "#/$defs/creditLineOpened" },
+    { "$ref": "#/$defs/contractPresented" },
+    { "$ref": "#/$defs/contractSigned" },
+    { "$ref": "#/$defs/loanDisbursed" },
+    { "$ref": "#/$defs/repaymentScheduleIssued" },
+    { "$ref": "#/$defs/repaymentReceived" },
+    { "$ref": "#/$defs/refundRequested" },
+    { "$ref": "#/$defs/refundCompleted" },
+    { "$ref": "#/$defs/overdueNoticeSent" },
+    { "$ref": "#/$defs/disputeOpened" },
+    { "$ref": "#/$defs/disputeResolved" },
+    { "$ref": "#/$defs/reportCorrected" },
+    { "$ref": "#/$defs/reconfirmationRequired" }
+  ],
+  "$defs": {
+    "money": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "partySet": {
+      "type": "object",
+      "required": ["lender", "fee_collector", "collector_party"],
+      "properties": {
+        "lender": { "type": "string", "minLength": 1, "description": "谁放款" },
+        "fee_collector": { "type": "string", "minLength": 1, "description": "谁收费" },
+        "collector_party": { "type": "string", "minLength": 1, "description": "谁催收" },
+        "facilitator": { "type": "string", "minLength": 1, "description": "助贷平台" },
+        "payment_institution": { "type": "string", "minLength": 1, "description": "支付机构" }
+      },
+      "additionalProperties": true
+    },
+    "fundLeg": {
+      "type": "object",
+      "required": ["from", "to", "amount"],
+      "properties": {
+        "from": { "type": "string", "minLength": 1 },
+        "to": { "type": "string", "minLength": 1 },
+        "amount": { "$ref": "#/$defs/money" },
+        "channel": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "costBlock": {
+      "type": "object",
+      "required": ["apr", "total_cost"],
+      "properties": {
+        "apr": { "type": "number", "minimum": 0, "description": "年化利率，同一报价内优惠前后口径一致" },
+        "total_cost": { "$ref": "#/$defs/money", "description": "综合融资成本总额" },
+        "total_interest": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": true
+    },
+    "orderConfirmed": {
+      "if": { "properties": { "event_type": { "const": "ORDER_CONFIRMED" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["items", "total_amount", "currency", "merchant_id"],
+            "properties": {
+              "items": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["sku", "name", "quantity", "unit_price"],
+                  "properties": {
+                    "sku": { "type": "string", "minLength": 1 },
+                    "name": { "type": "string", "minLength": 1 },
+                    "quantity": { "type": "integer", "minimum": 1 },
+                    "unit_price": { "$ref": "#/$defs/money" }
+                  }
+                }
+              },
+              "total_amount": { "$ref": "#/$defs/money" },
+              "currency": { "type": "string", "minLength": 1 },
+              "merchant_id": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "presentationArchived": {
+      "if": { "properties": { "event_type": { "const": "PRESENTATION_ARCHIVED" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["page_id", "page_version", "content_hash"],
+            "properties": {
+              "page_id": { "type": "string", "minLength": 1 },
+              "page_version": { "type": "string", "minLength": 1 },
+              "content_hash": { "type": "string", "minLength": 1, "description": "展示内容的摘要，重放时据此核对用户所见" },
+              "shown_options": {
+                "type": "array",
+                "description": "支付方式展示页必填；每个选项必须让用户一眼区分支付还是借款",
+                "items": {
+                  "type": "object",
+                  "required": ["method_id", "method_type", "label"],
+                  "properties": {
+                    "method_id": { "type": "string", "minLength": 1 },
+                    "method_type": { "type": "string", "enum": ["balance", "bank_card", "credit"] },
+                    "label": { "type": "string", "minLength": 1 }
+                  }
+                }
+              },
+              "default_method_id": { "type": ["string", "null"], "description": "不得指向信贷选项" },
+              "preselected_method_id": { "type": ["string", "null"], "description": "不得指向信贷选项" }
+            }
+          }
+        }
+      }
+    },
+    "paymentPresented": {
+      "if": { "properties": { "event_type": { "const": "PAYMENT_PRESENTED" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["presentation_id"],
+            "properties": { "presentation_id": { "type": "string", "minLength": 1 } }
+          }
+        }
+      }
+    },
+    "paymentMethodSelected": {
+      "if": { "properties": { "event_type": { "const": "PAYMENT_METHOD_SELECTED" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["presentation_id", "method_id", "method_type", "page_version", "selected_by"],
+            "properties": {
+              "presentation_id": { "type": "string", "minLength": 1 },
+              "method_id": { "type": "string", "minLength": 1 },
+              "method_type": { "type": "string", "enum": ["balance", "bank_card", "credit"] },
+              "page_version": { "type": "string", "minLength": 1 },
+              "selected_by": { "const": "user", "description": "必须由用户本人显式选择，系统不得代选" }
+            }
+          }
+        }
+      }
+    },
+    "paymentCaptured": {
+      "if": { "properties": { "event_type": { "const": "PAYMENT_CAPTURED" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["amount", "currency", "fund_path"],
+            "properties": {
+              "amount": { "$ref": "#/$defs/money" },
+              "currency": { "type": "string", "minLength": 1 },
+              "fund_path": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/fundLeg" } }
+            }
+          }
+        }
+      }
+    },
+    "creditDisclosed": {
+      "if": { "properties": { "event_type": { "const": "CREDIT_DISCLOSED" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["presentation_id", "parties", "calculation_method", "currency", "before_discount", "after_discount"],
+            "properties": {
+              "presentation_id": { "type": "string", "minLength": 1 },
+              "parties": { "$ref": "#/$defs/partySet" },
+              "calculation_method": { "type": "string", "minLength": 1, "description": "成本计算口径，如 IRR；同一报价不得中途变更" },
+              "currency": { "type": "string", "minLength": 1 },
+              "before_discount": { "$ref": "#/$defs/costBlock" },
+              "after_discount": { "$ref": "#/$defs/costBlock" },
+              "fees": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["name", "amount", "charged_by"],
+                  "properties": {
+                    "name": { "type": "string", "minLength": 1 },
+                    "amount": { "$ref": "#/$defs/money" },
+                    "charged_by": { "type": "string", "minLength": 1 }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "suitabilityEvaluated": {
+      "if": { "properties": { "event_type": { "const": "SUITABILITY_EVALUATED" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["result", "risk_level", "model_version"],
+            "properties": {
+              "result": { "type": "string", "enum": ["passed", "rejected", "manual_review"] },
+              "risk_level": { "type": "string", "minLength": 1 },
+              "model_version": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "consentCaptured": {
+      "if": { "properties": { "event_type": { "const": "CONSENT_CAPTURED" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["presentation_id", "consent_type", "granted", "page_version"],
+            "properties": {
+              "presentation_id": { "type": "string", "minLength": 1 },
+              "consent_type": { "type": "string", "enum": ["bureau_query", "agreement"] },
+              "agreement_id": { "type": "string", "minLength": 1, "description": "consent_type 为 agreement 时必填，协议须逐项同意" },
+              "granted": { "type": "boolean" },
+              "page_version": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "creditApplicationSubmitted": {
+      "if": { "properties": { "event_type": { "const": "CREDIT_APPLICATION_SUBMITTED" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["requested_amount", "currency"],
+            "properties": {
+              "requested_amount": { "$ref": "#/$defs/money" },
+              "currency": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "creditApplicationDecided": {
+      "if": { "properties": { "event_type": { "const": "CREDIT_APPLICATION_DECIDED" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["decision", "decided_by"],
+            "properties": {
+              "decision": { "type": "string", "enum": ["approved", "declined"] },
+              "decided_by": { "type": "string", "minLength": 1, "description": "作出授信决定的资金方" }
+            }
+          }
+        }
+      }
+    },
+    "creditLineOpened": {
+      "if": { "properties": { "event_type": { "const": "CREDIT_LINE_OPENED" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["approved_limit", "currency", "lender"],
+            "properties": {
+              "approved_limit": { "$ref": "#/$defs/money" },
+              "currency": { "type": "string", "minLength": 1 },
+              "lender": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "contractPresented": {
+      "if": { "properties": { "event_type": { "const": "CONTRACT_PRESENTED" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["presentation_id", "contract_version", "content_hash", "parties", "agreements"],
+            "properties": {
+              "presentation_id": { "type": "string", "minLength": 1 },
+              "contract_version": { "type": "string", "minLength": 1 },
+              "content_hash": { "type": "string", "minLength": 1 },
+              "parties": { "$ref": "#/$defs/partySet" },
+              "agreements": {
+                "type": "array",
+                "minItems": 1,
+                "description": "展示的全部协议，不得折叠打包；每份须单独取得同意",
+                "items": {
+                  "type": "object",
+                  "required": ["agreement_id", "title", "version"],
+                  "properties": {
+                    "agreement_id": { "type": "string", "minLength": 1 },
+                    "title": { "type": "string", "minLength": 1 },
+                    "version": { "type": "string", "minLength": 1 }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "contractSigned": {
+      "if": { "properties": { "event_type": { "const": "CONTRACT_SIGNED" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["presentation_id", "contract_version", "acknowledged_agreements", "signature_evidence"],
+            "properties": {
+              "presentation_id": { "type": "string", "minLength": 1 },
+              "contract_version": { "type": "string", "minLength": 1 },
+              "acknowledged_agreements": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "type": "string", "minLength": 1 }
+              },
+              "signature_evidence": {
+                "type": "object",
+                "required": ["method", "evidence_hash"],
+                "properties": {
+                  "method": { "type": "string", "minLength": 1 },
+                  "evidence_hash": { "type": "string", "minLength": 1 }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "loanDisbursed": {
+      "if": { "properties": { "event_type": { "const": "LOAN_DISBURSED" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["amount", "currency", "lender", "credit_line_id", "fund_path"],
+            "properties": {
+              "amount": { "$ref": "#/$defs/money" },
+              "currency": { "type": "string", "minLength": 1 },
+              "lender": { "type": "string", "minLength": 1 },
+              "credit_line_id": { "type": "string", "minLength": 1 },
+              "fund_path": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/fundLeg" } }
+            }
+          }
+        }
+      }
+    },
+    "repaymentScheduleIssued": {
+      "if": { "properties": { "event_type": { "const": "REPAYMENT_SCHEDULE_ISSUED" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["installments"],
+            "properties": {
+              "installments": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["installment_no", "due_date", "amount"],
+                  "properties": {
+                    "installment_no": { "type": "integer", "minimum": 1 },
+                    "due_date": { "type": "string", "format": "date" },
+                    "amount": { "$ref": "#/$defs/money" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "repaymentReceived": {
+      "if": { "properties": { "event_type": { "const": "REPAYMENT_RECEIVED" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["installment_no", "amount", "currency", "channel"],
+            "properties": {
+              "installment_no": { "type": "integer", "minimum": 1 },
+              "amount": { "$ref": "#/$defs/money" },
+              "currency": { "type": "string", "minLength": 1 },
+              "channel": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "refundRequested": {
+      "if": { "properties": { "event_type": { "const": "REFUND_REQUESTED" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["reason", "requested_amount", "currency"],
+            "properties": {
+              "reason": { "type": "string", "minLength": 1 },
+              "requested_amount": { "$ref": "#/$defs/money" },
+              "currency": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "refundCompleted": {
+      "if": { "properties": { "event_type": { "const": "REFUND_COMPLETED" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["reversals"],
+            "properties": {
+              "reversals": {
+                "type": "array",
+                "minItems": 1,
+                "description": "按原资金路径的反向冲销，original_event_id 指向 PAYMENT_CAPTURED 或 LOAN_DISBURSED",
+                "items": {
+                  "type": "object",
+                  "required": ["original_event_id", "legs"],
+                  "properties": {
+                    "original_event_id": { "type": "string", "minLength": 1 },
+                    "legs": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/fundLeg" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "overdueNoticeSent": {
+      "if": { "properties": { "event_type": { "const": "OVERDUE_NOTICE_SENT" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["contract_id", "collector_party", "channel", "amount_due", "currency"],
+            "properties": {
+              "contract_id": { "type": "string", "minLength": 1 },
+              "collector_party": { "type": "string", "minLength": 1, "description": "必须与合同披露的催收方一致" },
+              "channel": { "type": "string", "minLength": 1 },
+              "amount_due": { "$ref": "#/$defs/money" },
+              "currency": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "disputeOpened": {
+      "if": { "properties": { "event_type": { "const": "DISPUTE_OPENED" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["category", "related_contract_id", "assignee_role"],
+            "properties": {
+              "category": { "type": "string", "minLength": 1 },
+              "related_contract_id": { "type": "string", "minLength": 1 },
+              "assignee_role": { "type": "string", "enum": ["customer_service", "facilitation_platform", "funding_party"] }
+            }
+          }
+        }
+      }
+    },
+    "disputeResolved": {
+      "if": { "properties": { "event_type": { "const": "DISPUTE_RESOLVED" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["resolution", "resolver_role"],
+            "properties": {
+              "resolution": { "type": "string", "minLength": 1 },
+              "resolver_role": { "type": "string", "enum": ["customer_service", "facilitation_platform", "funding_party"] }
+            }
+          }
+        }
+      }
+    },
+    "reportCorrected": {
+      "if": { "properties": { "event_type": { "const": "REPORT_CORRECTED" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["corrects_event_id", "reason", "corrected_fields"],
+            "properties": {
+              "corrects_event_id": { "type": "string", "minLength": 1, "description": "被更正的原始记录；原记录保留，不删除" },
+              "reason": { "type": "string", "minLength": 1 },
+              "corrected_fields": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["field", "reported_value", "correct_value"],
+                  "properties": {
+                    "field": { "type": "string", "minLength": 1 },
+                    "reported_value": {},
+                    "correct_value": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "reconfirmationRequired": {
+      "if": { "properties": { "event_type": { "const": "RECONFIRMATION_REQUIRED" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["reason"],
+            "properties": {
+              "reason": { "type": "string", "enum": ["page_updated", "contract_updated"] },
+              "new_page_version": { "type": "string", "minLength": 1 },
+              "new_contract_version": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    }
+  }
+}

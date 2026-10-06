@@ -5,5 +5,11 @@
   "aggregate_id": "payment_credit_separation-001",
   "occurred_at": "2026-09-20T18:00:00+08:00",
   "version": 1,
-  "summary": "登记支付信贷分离网关的首条领域记录"
+  "summary": "登记支付信贷分离网关的首条领域记录",
+  "session_id": "payment_credit_separation-001",
+  "data_classification": "payment_status",
+  "visible_to": ["user", "merchant", "payment_institution", "facilitation_platform", "funding_party", "regulator"],
+  "payload": {
+    "presentation_id": "sample-presentation-001"
+  }
 }

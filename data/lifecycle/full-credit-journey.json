@@ -1,0 +1,567 @@
+[
+  {
+    "event_id": "evt-0001",
+    "event_type": "ORDER_CONFIRMED",
+    "aggregate_type": "checkout_session",
+    "aggregate_id": "co-1001",
+    "occurred_at": "2026-07-01T10:00:00+08:00",
+    "version": 1,
+    "summary": "用户确认商品订单：降噪耳机 1 件，合计 3000 元",
+    "session_id": "sess-2026-1001",
+    "data_classification": "order_info",
+    "visible_to": ["user", "merchant", "payment_institution", "facilitation_platform", "regulator"],
+    "payload": {
+      "items": [{ "sku": "sku-headphone-x1", "name": "降噪耳机 X1", "quantity": 1, "unit_price": 3000 }],
+      "total_amount": 3000,
+      "currency": "CNY",
+      "merchant_id": "m-01"
+    }
+  },
+  {
+    "event_id": "evt-0002",
+    "event_type": "PRESENTATION_ARCHIVED",
+    "aggregate_type": "presentation",
+    "aggregate_id": "pres-1001",
+    "occurred_at": "2026-07-01T10:00:05+08:00",
+    "version": 1,
+    "summary": "归档支付方式页 2026.09.1：余额、银行卡、分期月付并列展示，无默认选项",
+    "session_id": "sess-2026-1001",
+    "data_classification": "presentation_record",
+    "visible_to": ["user", "facilitation_platform", "regulator"],
+    "payload": {
+      "page_id": "checkout.payment_options",
+      "page_version": "2026.09.1",
+      "content_hash": "sha256:opt-2026-09-1",
+      "shown_options": [
+        { "method_id": "m-balance", "method_type": "balance", "label": "余额支付（立即可用）" },
+        { "method_id": "m-card", "method_type": "bank_card", "label": "银行卡支付" },
+        { "method_id": "m-credit-3", "method_type": "credit", "label": "分期月付·3 期（借款，需申请额度）" }
+      ],
+      "default_method_id": null,
+      "preselected_method_id": null
+    }
+  },
+  {
+    "event_id": "evt-0003",
+    "event_type": "PAYMENT_PRESENTED",
+    "aggregate_type": "checkout_session",
+    "aggregate_id": "co-1001",
+    "occurred_at": "2026-07-01T10:00:06+08:00",
+    "version": 1,
+    "summary": "向用户展示支付方式页（留档 pres-1001）",
+    "session_id": "sess-2026-1001",
+    "data_classification": "payment_status",
+    "visible_to": ["user", "merchant", "payment_institution", "facilitation_platform", "funding_party", "regulator"],
+    "payload": { "presentation_id": "pres-1001" }
+  },
+  {
+    "event_id": "evt-0004",
+    "event_type": "RECONFIRMATION_REQUIRED",
+    "aggregate_type": "checkout_session",
+    "aggregate_id": "co-1001",
+    "occurred_at": "2026-07-01T10:00:30+08:00",
+    "version": 1,
+    "summary": "支付方式页更新至 2026.09.2，未完成的选择须按新版本重新确认",
+    "session_id": "sess-2026-1001",
+    "data_classification": "presentation_record",
+    "visible_to": ["user", "facilitation_platform", "regulator"],
+    "payload": {
+      "reason": "page_updated",
+      "new_page_version": "2026.09.2"
+    }
+  },
+  {
+    "event_id": "evt-0005",
+    "event_type": "PRESENTATION_ARCHIVED",
+    "aggregate_type": "presentation",
+    "aggregate_id": "pres-1002",
+    "occurred_at": "2026-07-01T10:00:31+08:00",
+    "version": 1,
+    "summary": "归档支付方式页 2026.09.2：版式调整，选项与口径不变，仍无默认选项",
+    "session_id": "sess-2026-1001",
+    "data_classification": "presentation_record",
+    "visible_to": ["user", "facilitation_platform", "regulator"],
+    "payload": {
+      "page_id": "checkout.payment_options",
+      "page_version": "2026.09.2",
+      "content_hash": "sha256:opt-2026-09-2",
+      "shown_options": [
+        { "method_id": "m-balance", "method_type": "balance", "label": "余额支付（立即可用）" },
+        { "method_id": "m-card", "method_type": "bank_card", "label": "银行卡支付" },
+        { "method_id": "m-credit-3", "method_type": "credit", "label": "分期月付·3 期（借款，需申请额度）" }
+      ],
+      "default_method_id": null,
+      "preselected_method_id": null
+    }
+  },
+  {
+    "event_id": "evt-0006",
+    "event_type": "PAYMENT_PRESENTED",
+    "aggregate_type": "checkout_session",
+    "aggregate_id": "co-1001",
+    "occurred_at": "2026-07-01T10:00:32+08:00",
+    "version": 1,
+    "summary": "按新版本重新展示支付方式页（留档 pres-1002）",
+    "session_id": "sess-2026-1001",
+    "data_classification": "payment_status",
+    "visible_to": ["user", "merchant", "payment_institution", "facilitation_platform", "funding_party", "regulator"],
+    "payload": { "presentation_id": "pres-1002" }
+  },
+  {
+    "event_id": "evt-0007",
+    "event_type": "PAYMENT_METHOD_SELECTED",
+    "aggregate_type": "checkout_session",
+    "aggregate_id": "co-1001",
+    "occurred_at": "2026-07-01T10:01:02+08:00",
+    "version": 1,
+    "summary": "用户本人显式选择分期月付·3 期（信贷）",
+    "session_id": "sess-2026-1001",
+    "data_classification": "credit_detail",
+    "visible_to": ["user", "facilitation_platform", "funding_party", "regulator"],
+    "payload": {
+      "presentation_id": "pres-1002",
+      "method_id": "m-credit-3",
+      "method_type": "credit",
+      "page_version": "2026.09.2",
+      "selected_by": "user"
+    }
+  },
+  {
+    "event_id": "evt-0008",
+    "event_type": "PRESENTATION_ARCHIVED",
+    "aggregate_type": "presentation",
+    "aggregate_id": "pres-1003",
+    "occurred_at": "2026-07-01T10:01:10+08:00",
+    "version": 1,
+    "summary": "归档综合融资成本披露页 2026.09.2",
+    "session_id": "sess-2026-1001",
+    "data_classification": "presentation_record",
+    "visible_to": ["user", "facilitation_platform", "regulator"],
+    "payload": {
+      "page_id": "credit.cost_disclosure",
+      "page_version": "2026.09.2",
+      "content_hash": "sha256:disc-2026-09-2"
+    }
+  },
+  {
+    "event_id": "evt-0009",
+    "event_type": "CREDIT_DISCLOSED",
+    "aggregate_type": "credit_offer",
+    "aggregate_id": "offer-1001",
+    "occurred_at": "2026-07-01T10:01:11+08:00",
+    "version": 1,
+    "summary": "披露综合融资成本：IRR 口径，优惠前年化 18.5%、优惠后 15.9%，明示放款/收费/催收主体",
+    "session_id": "sess-2026-1001",
+    "data_classification": "credit_detail",
+    "visible_to": ["user", "facilitation_platform", "funding_party", "regulator"],
+    "payload": {
+      "presentation_id": "pres-1003",
+      "parties": {
+        "lender": "示例消费金融有限公司",
+        "fee_collector": "示例消费金融有限公司",
+        "collector_party": "示例资产管理有限公司",
+        "facilitator": "示例助贷平台",
+        "payment_institution": "示例支付机构"
+      },
+      "calculation_method": "IRR",
+      "currency": "CNY",
+      "before_discount": { "apr": 0.185, "total_cost": 320.41, "total_interest": 285.41 },
+      "after_discount": { "apr": 0.159, "total_cost": 275.1, "total_interest": 240.1 },
+      "fees": [{ "name": "分期服务费", "amount": 35, "charged_by": "示例消费金融有限公司" }]
+    }
+  },
+  {
+    "event_id": "evt-0010",
+    "event_type": "SUITABILITY_EVALUATED",
+    "aggregate_type": "suitability_assessment",
+    "aggregate_id": "sa-1001",
+    "occurred_at": "2026-07-01T10:01:25+08:00",
+    "version": 1,
+    "summary": "适当性评估通过：风险等级 R2，模型 suitability-2026.3",
+    "session_id": "sess-2026-1001",
+    "data_classification": "credit_detail",
+    "visible_to": ["user", "facilitation_platform", "funding_party", "regulator"],
+    "payload": {
+      "result": "passed",
+      "risk_level": "R2",
+      "model_version": "suitability-2026.3"
+    }
+  },
+  {
+    "event_id": "evt-0011",
+    "event_type": "PRESENTATION_ARCHIVED",
+    "aggregate_type": "presentation",
+    "aggregate_id": "pres-1004",
+    "occurred_at": "2026-07-01T10:01:40+08:00",
+    "version": 1,
+    "summary": "归档征信查询授权页 2026.09.2",
+    "session_id": "sess-2026-1001",
+    "data_classification": "presentation_record",
+    "visible_to": ["user", "facilitation_platform", "regulator"],
+    "payload": {
+      "page_id": "credit.bureau_consent",
+      "page_version": "2026.09.2",
+      "content_hash": "sha256:cons-2026-09-2"
+    }
+  },
+  {
+    "event_id": "evt-0012",
+    "event_type": "CONSENT_CAPTURED",
+    "aggregate_type": "checkout_session",
+    "aggregate_id": "co-1001",
+    "occurred_at": "2026-07-01T10:01:45+08:00",
+    "version": 1,
+    "summary": "用户授权查询个人征信（留档 pres-1004）",
+    "session_id": "sess-2026-1001",
+    "data_classification": "consent_record",
+    "visible_to": ["user", "facilitation_platform", "funding_party", "regulator"],
+    "payload": {
+      "presentation_id": "pres-1004",
+      "consent_type": "bureau_query",
+      "granted": true,
+      "page_version": "2026.09.2"
+    }
+  },
+  {
+    "event_id": "evt-0013",
+    "event_type": "CREDIT_APPLICATION_SUBMITTED",
+    "aggregate_type": "credit_application",
+    "aggregate_id": "app-1001",
+    "occurred_at": "2026-07-01T10:01:50+08:00",
+    "version": 1,
+    "summary": "提交授信申请 3000 元（幂等键 app-1001-submit）",
+    "session_id": "sess-2026-1001",
+    "data_classification": "credit_detail",
+    "visible_to": ["user", "facilitation_platform", "funding_party", "regulator"],
+    "idempotency_key": "app-1001-submit",
+    "payload": {
+      "requested_amount": 3000,
+      "currency": "CNY"
+    }
+  },
+  {
+    "event_id": "evt-0014",
+    "event_type": "CREDIT_APPLICATION_DECIDED",
+    "aggregate_type": "credit_application",
+    "aggregate_id": "app-1001",
+    "occurred_at": "2026-07-01T10:02:05+08:00",
+    "version": 1,
+    "summary": "资金方批准授信申请",
+    "session_id": "sess-2026-1001",
+    "data_classification": "credit_detail",
+    "visible_to": ["user", "facilitation_platform", "funding_party", "regulator"],
+    "payload": {
+      "decision": "approved",
+      "decided_by": "示例消费金融有限公司"
+    }
+  },
+  {
+    "event_id": "evt-0015",
+    "event_type": "CREDIT_LINE_OPENED",
+    "aggregate_type": "credit_line",
+    "aggregate_id": "cl-1001",
+    "occurred_at": "2026-07-01T10:02:06+08:00",
+    "version": 1,
+    "summary": "开通授信额度 20000 元（幂等键 cl-1001-open）",
+    "session_id": "sess-2026-1001",
+    "data_classification": "credit_detail",
+    "visible_to": ["user", "facilitation_platform", "funding_party", "regulator"],
+    "idempotency_key": "cl-1001-open",
+    "payload": {
+      "approved_limit": 20000,
+      "currency": "CNY",
+      "lender": "示例消费金融有限公司"
+    }
+  },
+  {
+    "event_id": "evt-0016",
+    "event_type": "PRESENTATION_ARCHIVED",
+    "aggregate_type": "presentation",
+    "aggregate_id": "pres-1005",
+    "occurred_at": "2026-07-01T10:02:20+08:00",
+    "version": 1,
+    "summary": "归档合同签署页 2026.09.2：三份协议逐项列出",
+    "session_id": "sess-2026-1001",
+    "data_classification": "presentation_record",
+    "visible_to": ["user", "facilitation_platform", "regulator"],
+    "payload": {
+      "page_id": "contract.signing",
+      "page_version": "2026.09.2",
+      "content_hash": "sha256:contract-cv3"
+    }
+  },
+  {
+    "event_id": "evt-0017",
+    "event_type": "CONTRACT_PRESENTED",
+    "aggregate_type": "loan_contract",
+    "aggregate_id": "lc-1001",
+    "occurred_at": "2026-07-01T10:02:21+08:00",
+    "version": 1,
+    "summary": "展示借款合同 cv-3 及全部三份协议，主体与成本披露一致",
+    "session_id": "sess-2026-1001",
+    "data_classification": "contract",
+    "visible_to": ["user", "facilitation_platform", "funding_party", "customer_service", "regulator"],
+    "payload": {
+      "presentation_id": "pres-1005",
+      "contract_version": "cv-3",
+      "content_hash": "sha256:contract-cv3",
+      "parties": {
+        "lender": "示例消费金融有限公司",
+        "fee_collector": "示例消费金融有限公司",
+        "collector_party": "示例资产管理有限公司",
+        "facilitator": "示例助贷平台",
+        "payment_institution": "示例支付机构"
+      },
+      "agreements": [
+        { "agreement_id": "agr-loan", "title": "个人消费借款合同", "version": "cv-3" },
+        { "agreement_id": "agr-bureau", "title": "征信查询与报送授权书", "version": "cv-3" },
+        { "agreement_id": "agr-privacy", "title": "个人信息处理授权书", "version": "cv-3" }
+      ]
+    }
+  },
+  {
+    "event_id": "evt-0018",
+    "event_type": "CONSENT_CAPTURED",
+    "aggregate_type": "checkout_session",
+    "aggregate_id": "co-1001",
+    "occurred_at": "2026-07-01T10:02:40+08:00",
+    "version": 1,
+    "summary": "用户逐项同意《个人消费借款合同》",
+    "session_id": "sess-2026-1001",
+    "data_classification": "consent_record",
+    "visible_to": ["user", "facilitation_platform", "funding_party", "regulator"],
+    "payload": {
+      "presentation_id": "pres-1005",
+      "consent_type": "agreement",
+      "agreement_id": "agr-loan",
+      "granted": true,
+      "page_version": "2026.09.2"
+    }
+  },
+  {
+    "event_id": "evt-0019",
+    "event_type": "CONSENT_CAPTURED",
+    "aggregate_type": "checkout_session",
+    "aggregate_id": "co-1001",
+    "occurred_at": "2026-07-01T10:02:41+08:00",
+    "version": 1,
+    "summary": "用户逐项同意《征信查询与报送授权书》",
+    "session_id": "sess-2026-1001",
+    "data_classification": "consent_record",
+    "visible_to": ["user", "facilitation_platform", "funding_party", "regulator"],
+    "payload": {
+      "presentation_id": "pres-1005",
+      "consent_type": "agreement",
+      "agreement_id": "agr-bureau",
+      "granted": true,
+      "page_version": "2026.09.2"
+    }
+  },
+  {
+    "event_id": "evt-0020",
+    "event_type": "CONSENT_CAPTURED",
+    "aggregate_type": "checkout_session",
+    "aggregate_id": "co-1001",
+    "occurred_at": "2026-07-01T10:02:42+08:00",
+    "version": 1,
+    "summary": "用户逐项同意《个人信息处理授权书》",
+    "session_id": "sess-2026-1001",
+    "data_classification": "consent_record",
+    "visible_to": ["user", "facilitation_platform", "funding_party", "regulator"],
+    "payload": {
+      "presentation_id": "pres-1005",
+      "consent_type": "agreement",
+      "agreement_id": "agr-privacy",
+      "granted": true,
+      "page_version": "2026.09.2"
+    }
+  },
+  {
+    "event_id": "evt-0021",
+    "event_type": "CONTRACT_SIGNED",
+    "aggregate_type": "loan_contract",
+    "aggregate_id": "lc-1001",
+    "occurred_at": "2026-07-01T10:02:55+08:00",
+    "version": 1,
+    "summary": "用户完成电子签署（短信验证码），逐项确认三份协议",
+    "session_id": "sess-2026-1001",
+    "data_classification": "contract",
+    "visible_to": ["user", "facilitation_platform", "funding_party", "customer_service", "regulator"],
+    "payload": {
+      "presentation_id": "pres-1005",
+      "contract_version": "cv-3",
+      "acknowledged_agreements": ["agr-loan", "agr-bureau", "agr-privacy"],
+      "signature_evidence": { "method": "sms_otp", "evidence_hash": "sha256:sig-1001" }
+    }
+  },
+  {
+    "event_id": "evt-0022",
+    "event_type": "LOAN_DISBURSED",
+    "aggregate_type": "loan_contract",
+    "aggregate_id": "lc-1001",
+    "occurred_at": "2026-07-01T10:03:05+08:00",
+    "version": 1,
+    "summary": "资金方放款 3000 元，受托支付至商户（幂等键 disb-1001）",
+    "session_id": "sess-2026-1001",
+    "data_classification": "fund_flow",
+    "visible_to": ["user", "payment_institution", "facilitation_platform", "funding_party", "regulator"],
+    "idempotency_key": "disb-1001",
+    "payload": {
+      "amount": 3000,
+      "currency": "CNY",
+      "lender": "示例消费金融有限公司",
+      "credit_line_id": "cl-1001",
+      "fund_path": [
+        { "from": "fp-01", "to": "m-01", "amount": 3000, "channel": "示例清算网络" }
+      ]
+    }
+  },
+  {
+    "event_id": "evt-0023",
+    "event_type": "REPAYMENT_SCHEDULE_ISSUED",
+    "aggregate_type": "loan_contract",
+    "aggregate_id": "lc-1001",
+    "occurred_at": "2026-07-01T10:03:06+08:00",
+    "version": 1,
+    "summary": "下发还款计划：3 期，每期 1091.70 元",
+    "session_id": "sess-2026-1001",
+    "data_classification": "debt_detail",
+    "visible_to": ["user", "facilitation_platform", "funding_party", "regulator"],
+    "payload": {
+      "installments": [
+        { "installment_no": 1, "due_date": "2026-08-01", "amount": 1091.7 },
+        { "installment_no": 2, "due_date": "2026-09-01", "amount": 1091.7 },
+        { "installment_no": 3, "due_date": "2026-10-01", "amount": 1091.7 }
+      ]
+    }
+  },
+  {
+    "event_id": "evt-0024",
+    "event_type": "REPAYMENT_RECEIVED",
+    "aggregate_type": "loan_contract",
+    "aggregate_id": "lc-1001",
+    "occurred_at": "2026-08-01T09:00:00+08:00",
+    "version": 1,
+    "summary": "第 1 期还款到账 1091.70 元",
+    "session_id": "sess-2026-1001",
+    "data_classification": "debt_detail",
+    "visible_to": ["user", "facilitation_platform", "funding_party", "regulator"],
+    "payload": {
+      "installment_no": 1,
+      "amount": 1091.7,
+      "currency": "CNY",
+      "channel": "示例支付机构代扣"
+    }
+  },
+  {
+    "event_id": "evt-0025",
+    "event_type": "OVERDUE_NOTICE_SENT",
+    "aggregate_type": "overdue_notice",
+    "aggregate_id": "on-1001",
+    "occurred_at": "2026-09-03T09:00:00+08:00",
+    "version": 1,
+    "summary": "第 2 期逾期，合同披露的催收方发送提醒",
+    "session_id": "sess-2026-1001",
+    "data_classification": "debt_detail",
+    "visible_to": ["user", "facilitation_platform", "funding_party", "regulator"],
+    "payload": {
+      "contract_id": "lc-1001",
+      "collector_party": "示例资产管理有限公司",
+      "channel": "sms",
+      "amount_due": 1091.7,
+      "currency": "CNY"
+    }
+  },
+  {
+    "event_id": "evt-0026",
+    "event_type": "REFUND_REQUESTED",
+    "aggregate_type": "refund",
+    "aggregate_id": "rf-1001",
+    "occurred_at": "2026-09-05T14:00:00+08:00",
+    "version": 1,
+    "summary": "用户退货，申请部分退款 1000 元",
+    "session_id": "sess-2026-1001",
+    "data_classification": "fund_flow",
+    "visible_to": ["user", "payment_institution", "facilitation_platform", "funding_party", "regulator"],
+    "payload": {
+      "reason": "用户退货",
+      "requested_amount": 1000,
+      "currency": "CNY"
+    }
+  },
+  {
+    "event_id": "evt-0027",
+    "event_type": "REFUND_COMPLETED",
+    "aggregate_type": "refund",
+    "aggregate_id": "rf-1001",
+    "occurred_at": "2026-09-05T14:00:20+08:00",
+    "version": 1,
+    "summary": "按原放款资金路径反向冲销 1000 元（幂等键 rf-1001-complete）",
+    "session_id": "sess-2026-1001",
+    "data_classification": "fund_flow",
+    "visible_to": ["user", "payment_institution", "facilitation_platform", "funding_party", "regulator"],
+    "idempotency_key": "rf-1001-complete",
+    "payload": {
+      "reversals": [
+        {
+          "original_event_id": "evt-0022",
+          "legs": [
+            { "from": "m-01", "to": "fp-01", "amount": 1000, "channel": "示例清算网络" }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "event_id": "evt-0028",
+    "event_type": "DISPUTE_OPENED",
+    "aggregate_type": "dispute",
+    "aggregate_id": "dp-1001",
+    "occurred_at": "2026-09-06T10:00:00+08:00",
+    "version": 1,
+    "summary": "用户对分期服务费提出争议，转客服处理",
+    "session_id": "sess-2026-1001",
+    "data_classification": "dispute",
+    "visible_to": ["user", "facilitation_platform", "funding_party", "customer_service", "regulator"],
+    "payload": {
+      "category": "费用争议",
+      "related_contract_id": "lc-1001",
+      "assignee_role": "customer_service"
+    }
+  },
+  {
+    "event_id": "evt-0029",
+    "event_type": "DISPUTE_RESOLVED",
+    "aggregate_type": "dispute",
+    "aggregate_id": "dp-1001",
+    "occurred_at": "2026-09-08T18:00:00+08:00",
+    "version": 1,
+    "summary": "争议办结：服务费按优惠后口径重新核算，差额退回",
+    "session_id": "sess-2026-1001",
+    "data_classification": "dispute",
+    "visible_to": ["user", "facilitation_platform", "funding_party", "customer_service", "regulator"],
+    "payload": {
+      "resolution": "服务费按优惠后口径重新核算，差额退回",
+      "resolver_role": "customer_service"
+    }
+  },
+  {
+    "event_id": "evt-0030",
+    "event_type": "REPORT_CORRECTED",
+    "aggregate_type": "credit_correction",
+    "aggregate_id": "cc-1001",
+    "occurred_at": "2026-09-10T10:00:00+08:00",
+    "version": 1,
+    "summary": "更正首期还款的征信报送金额，原报送记录保留",
+    "session_id": "sess-2026-1001",
+    "data_classification": "credit_bureau",
+    "visible_to": ["user", "facilitation_platform", "funding_party", "credit_bureau_agency", "regulator"],
+    "payload": {
+      "corrects_event_id": "evt-0024",
+      "reason": "首期还款金额报送错误",
+      "corrected_fields": [
+        { "field": "repaid_amount", "reported_value": 109.17, "correct_value": 1091.7 }
+      ]
+    }
+  }
+]

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "领域事件基础校验",
+  "description": "支付信贷分离网关的领域事件契约与合规校验",
   "scripts": {
     "test": "node --test"
   }

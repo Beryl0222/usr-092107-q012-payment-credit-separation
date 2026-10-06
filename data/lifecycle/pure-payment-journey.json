@@ -1,0 +1,96 @@
+[
+  {
+    "event_id": "evt-1001",
+    "event_type": "ORDER_CONFIRMED",
+    "aggregate_type": "checkout_session",
+    "aggregate_id": "co-2001",
+    "occurred_at": "2026-08-15T12:00:00+08:00",
+    "version": 1,
+    "summary": "用户确认商品订单：技术图书 2 本，合计 599 元",
+    "session_id": "sess-2026-1002",
+    "data_classification": "order_info",
+    "visible_to": ["user", "merchant", "payment_institution", "facilitation_platform", "regulator"],
+    "payload": {
+      "items": [{ "sku": "sku-book-42", "name": "分布式系统导论", "quantity": 2, "unit_price": 299.5 }],
+      "total_amount": 599,
+      "currency": "CNY",
+      "merchant_id": "m-02"
+    }
+  },
+  {
+    "event_id": "evt-1002",
+    "event_type": "PRESENTATION_ARCHIVED",
+    "aggregate_type": "presentation",
+    "aggregate_id": "pres-2001",
+    "occurred_at": "2026-08-15T12:00:03+08:00",
+    "version": 1,
+    "summary": "归档支付方式页：余额、银行卡、分期月付并列展示，无默认选项",
+    "session_id": "sess-2026-1002",
+    "data_classification": "presentation_record",
+    "visible_to": ["user", "facilitation_platform", "regulator"],
+    "payload": {
+      "page_id": "checkout.payment_options",
+      "page_version": "2026.09.2",
+      "content_hash": "sha256:opt-2026-09-2",
+      "shown_options": [
+        { "method_id": "m-balance", "method_type": "balance", "label": "余额支付（立即可用）" },
+        { "method_id": "m-card", "method_type": "bank_card", "label": "银行卡支付" },
+        { "method_id": "m-credit-3", "method_type": "credit", "label": "分期月付·3 期（借款，需申请额度）" }
+      ],
+      "default_method_id": null,
+      "preselected_method_id": null
+    }
+  },
+  {
+    "event_id": "evt-1003",
+    "event_type": "PAYMENT_PRESENTED",
+    "aggregate_type": "checkout_session",
+    "aggregate_id": "co-2001",
+    "occurred_at": "2026-08-15T12:00:04+08:00",
+    "version": 1,
+    "summary": "向用户展示支付方式页（留档 pres-2001）",
+    "session_id": "sess-2026-1002",
+    "data_classification": "payment_status",
+    "visible_to": ["user", "merchant", "payment_institution", "facilitation_platform", "funding_party", "regulator"],
+    "payload": { "presentation_id": "pres-2001" }
+  },
+  {
+    "event_id": "evt-1004",
+    "event_type": "PAYMENT_METHOD_SELECTED",
+    "aggregate_type": "checkout_session",
+    "aggregate_id": "co-2001",
+    "occurred_at": "2026-08-15T12:00:20+08:00",
+    "version": 1,
+    "summary": "用户本人显式选择余额支付（纯支付，不涉及信贷）",
+    "session_id": "sess-2026-1002",
+    "data_classification": "payment_status",
+    "visible_to": ["user", "merchant", "payment_institution", "facilitation_platform", "funding_party", "regulator"],
+    "payload": {
+      "presentation_id": "pres-2001",
+      "method_id": "m-balance",
+      "method_type": "balance",
+      "page_version": "2026.09.2",
+      "selected_by": "user"
+    }
+  },
+  {
+    "event_id": "evt-1005",
+    "event_type": "PAYMENT_CAPTURED",
+    "aggregate_type": "checkout_session",
+    "aggregate_id": "co-2001",
+    "occurred_at": "2026-08-15T12:00:21+08:00",
+    "version": 1,
+    "summary": "支付机构完成收单 599 元（幂等键 cap-2001）",
+    "session_id": "sess-2026-1002",
+    "data_classification": "fund_flow",
+    "visible_to": ["user", "payment_institution", "facilitation_platform", "funding_party", "regulator"],
+    "idempotency_key": "cap-2001",
+    "payload": {
+      "amount": 599,
+      "currency": "CNY",
+      "fund_path": [
+        { "from": "u-2002", "to": "m-02", "amount": 599, "channel": "示例支付机构" }
+      ]
+    }
+  }
+]

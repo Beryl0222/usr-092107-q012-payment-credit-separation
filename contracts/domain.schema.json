@@ -1,6 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "支付信贷分离网关领域事件",
+  "$id": "https://example.local/contracts/domain.schema.json",
+  "title": "支付信贷分离网关领域事件信封",
+  "description": "所有环节共用的信封结构；各事件类型的 payload 约束见 payloads.schema.json。记录一经接收，event_id、occurred_at 与版本不得原地改写，更正以新的后继记录完成。",
   "type": "object",
   "required": [
     "event_id",
@@ -9,29 +11,59 @@
     "aggregate_id",
     "occurred_at",
     "version",
-    "summary"
+    "summary",
+    "session_id",
+    "data_classification",
+    "visible_to",
+    "payload"
   ],
   "properties": {
     "event_id": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "description": "全局唯一，接收后不得改写"
     },
     "event_type": {
       "type": "string",
       "enum": [
+        "ORDER_CONFIRMED",
+        "PRESENTATION_ARCHIVED",
         "PAYMENT_PRESENTED",
+        "PAYMENT_METHOD_SELECTED",
+        "PAYMENT_CAPTURED",
         "CREDIT_DISCLOSED",
+        "SUITABILITY_EVALUATED",
         "CONSENT_CAPTURED",
+        "CREDIT_APPLICATION_SUBMITTED",
+        "CREDIT_APPLICATION_DECIDED",
+        "CREDIT_LINE_OPENED",
+        "CONTRACT_PRESENTED",
+        "CONTRACT_SIGNED",
         "LOAN_DISBURSED",
-        "REPORT_CORRECTED"
+        "REPAYMENT_SCHEDULE_ISSUED",
+        "REPAYMENT_RECEIVED",
+        "REFUND_REQUESTED",
+        "REFUND_COMPLETED",
+        "OVERDUE_NOTICE_SENT",
+        "DISPUTE_OPENED",
+        "DISPUTE_RESOLVED",
+        "REPORT_CORRECTED",
+        "RECONFIRMATION_REQUIRED"
       ]
     },
     "aggregate_type": {
       "type": "string",
       "enum": [
         "checkout_session",
+        "presentation",
         "credit_offer",
+        "suitability_assessment",
+        "credit_application",
+        "credit_line",
         "loan_contract",
+        "refund",
+        "overdue_notice",
+        "dispute",
         "credit_correction"
       ]
     },
@@ -41,15 +73,66 @@
     },
     "occurred_at": {
       "type": "string",
-      "format": "date-time"
+      "format": "date-time",
+      "description": "事件发生时间，接收后不得改写"
     },
     "version": {
       "type": "integer",
-      "minimum": 1
+      "minimum": 1,
+      "description": "事件结构版本"
     },
     "summary": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "description": "面向排查与重放的中文摘要"
+    },
+    "session_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "结账会话标识，把跨聚合的各环节串成可追踪的整体"
+    },
+    "data_classification": {
+      "type": "string",
+      "enum": [
+        "order_info",
+        "payment_status",
+        "presentation_record",
+        "consent_record",
+        "credit_detail",
+        "contract",
+        "fund_flow",
+        "debt_detail",
+        "credit_bureau",
+        "dispute"
+      ],
+      "description": "数据分类，决定哪些角色可以读取"
+    },
+    "visible_to": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": [
+          "user",
+          "merchant",
+          "payment_institution",
+          "facilitation_platform",
+          "funding_party",
+          "customer_service",
+          "regulator",
+          "credit_bureau_agency"
+        ]
+      },
+      "description": "允许读取的角色，必须是数据分类允许集合的子集，且始终包含 user"
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 1,
+      "description": "幂等键；PAYMENT_CAPTURED、CREDIT_APPLICATION_SUBMITTED、CREDIT_LINE_OPENED、LOAN_DISBURSED、REFUND_COMPLETED 必填"
+    },
+    "payload": {
+      "type": "object",
+      "description": "事件内容，按事件类型分别约束，见 payloads.schema.json"
     }
   },
   "additionalProperties": true
